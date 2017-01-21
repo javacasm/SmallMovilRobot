@@ -6,13 +6,13 @@ $fn=128*1;
 
 
 // Cave for the external gun (mm)
-cave_width = 5;
+cave_width = 2;
 
 // Wheel diameter (mm)
-wheel_dia = 65; // [10:150]
+wheel_dia = 75; // [10:150]
 
 // Thickness of the outer rim (mm)
-rim_thickness = 2.0;
+rim_thickness = 5.0;
 
 // Width of the wheel rim (mm)
 wheel_width = 5;
@@ -89,7 +89,7 @@ module double_flat_circle(dia, flats_dia) {
 
 difference() {
     union() {
-        difference()
+        difference() 
         {
         // outer rim
         tube(od=wheel_dia, id=wheel_dia-rim_thickness*2, h=wheel_width);
@@ -97,24 +97,38 @@ difference() {
             
         // External cave    
         rotate_extrude(convextity=5,$fn=100)
-           translate([wheel_dia/2+cave_width*98/100,wheel_width/2,0])
+           translate([wheel_dia/2+cave_width*60/100,wheel_width/2,0])
            circle(r=cave_width,$fn=100);
-
-            
-           }
+        }
        
         // spokes
         for (i=[0:num_spokes-1]) {
             a = i/num_spokes*360;
             rotate(a) cube2([wheel_dia/2-rim_thickness/2, spoke_thickness, hub_width], aligns="LCL");
-        }
+             } 
         
         //hub
-        cylinder(d=hub_dia, h=hub_width);
-    }
-    translate([0,0,-E]) linear_extrude(hub_width+2*E) offset(shaft_tolerance) double_flat_circle(shaft_dia,shaft_flats_dia);
+        // translate([0,0,-hub_width*0.2]) // Would be ok, but is getting printing troubles...
+            cylinder(d=hub_dia, h=hub_width*1.6);
+        
+        }
+    
+    
+    
+   // the axe
+    translate([0,0,-E]) 
+           linear_extrude((hub_width+2*E)*1.6) 
+                offset(shaft_tolerance*2) 
+                    double_flat_circle(shaft_dia,shaft_flats_dia);
 }
 
-%translate([0,0,-1]) linear_extrude(8.38) double_flat_circle(shaft_dia,shaft_flats_dia);
-%translate([-10,0,-1]) cube2([60,30,20],aligns="CCR");
+
+// Only for get the real sight
+// the axe
+%translate([0,0,-1]) 
+    linear_extrude(9.38) 
+        double_flat_circle(shaft_dia,shaft_flats_dia);
+// the motor box
+%translate([-10,0,-1]) 
+    cube2([60,30,20],aligns="CCR");
 
